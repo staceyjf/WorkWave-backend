@@ -27,6 +27,8 @@ At least 3 endpoints are required:
 - To get a list of existing employees
 - To delete an employee
 
+Explore the spring API documentation at: http://localhost:8080/swagger-ui/index.html
+
 <!-- ## Demo
 
 This API works hand in hand with the Typescript React app (available [here](https://github.com/staceyjf/Postcheck-front)) which is being demo'ed below.
