@@ -12,16 +12,18 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import jakarta.servlet.DispatcherType;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
+// allows for different security based annotations
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
 
 	@Autowired
-	SecurityFilter JwtCookieFilter; // custom filter to extra and validate token
+	JwtCookieFilter jwtCookieFilter; // custom filter to extract JWT from cookie
 
 	@Autowired
 	private AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -40,15 +42,18 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable()) // Cross-Site Request Forgery
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+		// ensure all HTTP requests are redirecting to HTTPS
+				.requiresChannel(channel -> channel.anyRequest().requiresSecure())
 				// each session is authenticated independently
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests((authorize) -> authorize // configure URL-based auth
 						.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
 						.requestMatchers("/admin/**").hasAnyRole("ADMIN")
 						.requestMatchers("/swagger-ui/**").permitAll()
 						.requestMatchers("/login").permitAll()
 						.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-						.anyRequest().authenticated());
+						.anyRequest().authenticated())
+				.addFilterBefore(jwtCookieFilter, UsernamePasswordAuthenticationFilter.class);
 		;
 
 		return http.build();
