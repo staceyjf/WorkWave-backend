@@ -34,20 +34,8 @@ public class Department implements Comparable<Department> {
     @Column(nullable = false)
     private String departmentName;
 
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "associatedDepartment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Employee> associatedEmployees = new ArrayList<>();
-
-    // helper function to manage the bi-relationship between employee to departments
-    public void addEmployee(Employee employee) {
-        associatedEmployees.add(employee);
-        employee.setAssociatedDepartment(this);
-    }
-
-    // helper function to manage the bi-relationship between employee to departments
-    public void removeEmployee(Employee employee) {
-        associatedEmployees.remove(employee);
-        employee.setAssociatedDepartment(null);
-    }
 
     // using the comparable interface to enable sorting by the postcode field
     @Override

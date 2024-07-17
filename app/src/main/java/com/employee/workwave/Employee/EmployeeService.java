@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.employee.workwave.Department.Department;
 import com.employee.workwave.Department.DepartmentService;
 import com.employee.workwave.exceptions.ServiceValidationException;
 import com.employee.workwave.exceptions.ValidationErrors;
@@ -54,6 +55,15 @@ public class EmployeeService implements UserDetailsService {
             throw new ServiceValidationException(errors);
         }
 
+        ROLE role = null;
+
+        if (data.getRole() != null) {
+            role = ROLE.valueOf(data.getRole().toUpperCase());
+        } else {
+            errors.addError("User", "Role is missing");
+            throw new ServiceValidationException(errors);
+        }
+
         if (!errors.isEmpty()) {
             throw new ServiceValidationException(errors);
         }
@@ -61,29 +71,19 @@ public class EmployeeService implements UserDetailsService {
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.getPassword());
 
         Employee newEmployee = new Employee(
-                data.getUsername(), encryptedPassword, data.getRole(),
+                data.getUsername(), encryptedPassword, 
+                role,
                 data.getFirstName(), data.getMiddleName().isEmpty() ? null : data.getMiddleName(),
                 data.getLastName(), data.getWorkEmail(), data.getMobile(), data.getAddress());
 
-        if (!data.get) {
-            for (Long id : data.getEmployeeIds()) {
-                Optional<Employee> maybeEmployee = this.employeeService.findById(id);
-
-                if (maybeEmployee.isEmpty()) {
-                    errors.addError("Employee", String.format("Employee with id %s does not exist", id));
-                } else {
-                    newDepartment.addEmployee(maybeEmployee.get());
-                    // using the helper function to update both
-                    // department's associatedEmployees and
-                    // employee's department
-                    // making the relationship bi-directional
-                }
-            }
+        if (data.getAssociatedDepartmentId() != null) {
+            Optional<Department> maybeDepartment = this.departmentService.findById(data.getAssociatedDepartmentId());
+            newEmployee.addDepartment(maybeDepartment.get());
         }
-   
+
         try {
             Employee savedEmployee = repo.save(newEmployee);
-            fullLogsLogger.info("New user saved to the db");
+            fullLogsLogger.info("New employee saved to the db");
             return savedEmployee;
         } catch (Exception ex) {
             fullLogsLogger.error("An error occurred when trying to sign up and create a new user in the db: ",
@@ -101,6 +101,90 @@ public class EmployeeService implements UserDetailsService {
         Optional<Employee> foundUser = this.repo.findById(id);
         fullLogsLogger.info("Located User in db with ID: " + foundUser.get().getId());
         return foundUser;
+    }
+
+    public Optional<Employee> updateById(Long id, @Valid UpdateEmployeeDTO data) throws ServiceValidationException {
+        Optional<Employee> maybeEmployee = this.findById(id);
+
+        if (maybeEmployee.isPresent()) {
+            Employee employee = maybeEmployee.get();
+            ValidationErrors errors = new ValidationErrors();
+
+            // check to see if the username already exists
+            if (data.getUsername() != null && repo.findByUsername(data.getUsername()) != null) {
+                errors.addError("User", "Username already exists");
+                throw new ServiceValidationException(errors);
+            }
+
+            // email needs to be in a valid email format
+            if (data.getWorkEmail() != null && data.getWorkEmail().matches("^(\\w+@\\w+\\.\\w{2,3})$")) {
+                errors.addError("User", "Work email is not in a valid format");
+                throw new ServiceValidationException(errors);
+            }
+
+            // mobile needs to be 10 digital numerical format
+            if (data.getMobile() != null && data.getMobile().matches("^(?:\\d{10})$")) {
+                errors.addError("User", "Mobile number is not in a 10 digit format");
+                throw new ServiceValidationException(errors);
+            }
+
+            ROLE role = null;
+
+            if (data.getRole() != null) {
+                role = ROLE.valueOf(data.getRole().toUpperCase());
+            } 
+
+            if (!errors.isEmpty()) {
+                throw new ServiceValidationException(errors);
+            }
+
+            if (data.getUsername() != null)
+                employee.setUsername(data.getUsername());
+            if (data.getRole() != null)
+                employee.setRole(role);
+            if (data.getPassword() != null) {
+                String encryptedPassword = new BCryptPasswordEncoder().encode(data.getPassword());
+                employee.setPassword(encryptedPassword);
+            }
+            if (data.getFirstName() != null)
+                employee.setFirstName(data.getFirstName());
+            if (data.getMiddleName() != null)
+                employee.setMiddleName(data.getMiddleName());
+            if (data.getLastName() != null)
+                employee.setLastName(data.getLastName());
+            if (data.getWorkEmail() != null)
+                employee.setWorkEmail(data.getWorkEmail());
+            if (data.getMobile() != null)
+                employee.setMobile(data.getMobile());
+            if (data.getAssociatedDepartmentId() != null) {
+                Optional<Department> maybeDepartment = this.departmentService
+                        .findById(data.getAssociatedDepartmentId());
+                employee.addDepartment(maybeDepartment.get());
+            }
+
+            // Save the updated employee
+            repo.save(employee);
+
+            return Optional.of(employee);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public boolean deleteById(Long id) throws ServiceValidationException {
+        Optional<Employee> maybeEmployee = this.findById(id);
+        if (maybeEmployee.isEmpty()) {
+            return false;
+        }
+
+        Employee foundEmployee = maybeEmployee.get();
+
+        if (foundEmployee.getAssociatedDepartment() != null) {
+            foundEmployee.removeDepartment(foundEmployee.getAssociatedDepartment());
+        }
+
+        this.repo.delete(foundEmployee);
+        return true;
     }
 
 }

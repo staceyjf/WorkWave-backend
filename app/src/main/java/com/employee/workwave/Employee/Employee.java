@@ -72,10 +72,10 @@ public class Employee implements UserDetails {
     private String address;
 
     @ManyToOne()
+    @JsonIgnore
     @JoinColumn(name = "department_id", nullable = false)
-    @JsonIgnoreProperties("employees")
     private Department associatedDepartment;
-    
+
     // to create a user with the random publicId
     public Employee(String username, String password, ROLE role, String firstName, String middleName, String lastName,
             String workEmail, String mobile, String address) {
@@ -132,10 +132,11 @@ public class Employee implements UserDetails {
         department.getAssociatedEmployees().add(this); // add the employee to the list of existing employees
     }
 
-    // helper function to manage the bi-relationship between Department to departments
+    // helper function to manage the bi-relationship between Department to
+    // departments
     public void removeDepartment(Department department) {
         this.associatedDepartment = null;
         department.getAssociatedEmployees().remove(this); // add the employee to the list of existing employees
-    } 
+    }
 
 }

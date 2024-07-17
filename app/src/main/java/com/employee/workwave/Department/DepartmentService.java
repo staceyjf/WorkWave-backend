@@ -29,9 +29,6 @@ public class DepartmentService {
     @Autowired
     private DepartmentRepository repo;
 
-    @Autowired
-    private EmployeeService employeeService;
-
     public Department createDepartment(@Valid CreateDepartmentDTO data) throws ServiceValidationException {
         ValidationErrors errors = new ValidationErrors();
         Department newDepartment = new Department();
@@ -39,22 +36,6 @@ public class DepartmentService {
         String trimmedNameField = data.getDepartmentName().trim();
         if (trimmedNameField.isBlank()) {
             errors.addError("Department", "Department field must contain a value.");
-        }
-
-        if (!data.getEmployeeIds().isEmpty()) {
-            for (Long id : data.getEmployeeIds()) {
-                Optional<Employee> maybeEmployee = this.employeeService.findById(id);
-
-                if (maybeEmployee.isEmpty()) {
-                    errors.addError("Employee", String.format("Employee with id %s does not exist", id));
-                } else {
-                    newDepartment.addEmployee(maybeEmployee.get());
-                    // using the helper function to update both
-                    // department's associatedEmployees and
-                    // employee's department
-                    // making the relationship bi-directional
-                }
-            }
         }
 
         if (!errors.isEmpty()) {
@@ -106,24 +87,6 @@ public class DepartmentService {
         // check to see if Department field has been provided
         String trimmedNameField = data.getDepartmentName() != null ? data.getDepartmentName().trim() : null;
 
-        if (trimmedNameField != null) {
-            if (trimmedNameField.isEmpty()) {
-                errors.addError("Department", "Department field needs to have a value.");
-            }
-        }
-
-        if (!data.getEmployeeIds().isEmpty()) {
-            for (Long employeeId : data.getEmployeeIds()) {
-                Optional<Employee> maybeEmployee = this.employeeService.findById(employeeId);
-
-                if (maybeEmployee.isEmpty()) {
-                    errors.addError("Employee", String.format("Employee with id %s does not exist", employeeId));
-                } else {
-                    foundDepartment.addEmployee(maybeEmployee.get());
-                }
-            }
-        }
-
         // attempt all validation before throwing an error
         if (errors.hasErrors()) {
             throw new ServiceValidationException(errors);
@@ -147,12 +110,6 @@ public class DepartmentService {
         }
 
         Department foundDepartment = maybeDepartment.get();
-
-        if (!foundDepartment.getAssociatedEmployees().isEmpty()) {
-            for (Employee employee : foundDepartment.getAssociatedEmployees()) {
-                foundDepartment.removeEmployee(employee);
-            }
-        }
 
         this.repo.delete(foundDepartment);
         return true;

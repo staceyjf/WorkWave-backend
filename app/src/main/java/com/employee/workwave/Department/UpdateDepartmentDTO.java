@@ -1,7 +1,5 @@
 package com.employee.workwave.Department;
 
-import java.util.ArrayList;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +10,5 @@ import lombok.NoArgsConstructor;
 public class UpdateDepartmentDTO {
 
     String departmentName;
-
-    private ArrayList<Long> employeeIds = new ArrayList<>();
 
 }

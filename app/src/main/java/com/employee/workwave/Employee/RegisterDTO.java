@@ -6,16 +6,16 @@ import lombok.NoArgsConstructor;
 
 @Data // Generates getters, setters, toString, equals, and hashCode methods
 @NoArgsConstructor
-@AllArgsConstructor 
+@AllArgsConstructor
 public class RegisterDTO {
         private String username;
         private String password;
-        private ROLE role;
+        private String role;
         private String firstName;
         private String middleName;
         private String lastName;
         private String workEmail;
         private String mobile;
         private String address;
-        private String associatedDepartment;
+        private Long associatedDepartmentId;
 }

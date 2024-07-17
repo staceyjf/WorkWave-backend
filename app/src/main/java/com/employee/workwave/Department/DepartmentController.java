@@ -93,7 +93,7 @@ public class DepartmentController {
                 return new ResponseEntity<>(updatedDepartment, HttpStatus.OK);
         }
 
-        @Operation(summary = "Delete a Department by ID", description = "Delete a department by ID")
+        @Operation(summary = "Delete a department by ID", description = "Delete a department by ID")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "204", description = "Department deleted"),
                         @ApiResponse(responseCode = "404", description = "Department not found"),
