@@ -42,16 +42,16 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable()) // Cross-Site Request Forgery
-		// ensure all HTTP requests are redirecting to HTTPS
+				// ensure all HTTP requests are redirecting to HTTPS
 				.requiresChannel(channel -> channel.anyRequest().requiresSecure())
 				// each session is authenticated independently
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests((authorize) -> authorize // configure URL-based auth
 						.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
 						.requestMatchers("/admin/**").hasAnyRole("ADMIN")
+						.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
 						.requestMatchers("/swagger-ui/**").permitAll()
 						.requestMatchers("/login").permitAll()
-						.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
 						.anyRequest().authenticated())
 				.addFilterBefore(jwtCookieFilter, UsernamePasswordAuthenticationFilter.class);
 		;

@@ -50,7 +50,7 @@ public class User implements UserDetails  {
     private String password;
 
     // to create a user
-    public User(String username, USERROLE role, String password) {
+    public User(String username, String password, USERROLE role) {
         this.username = username;
         this.role = role;
         this.password = password;

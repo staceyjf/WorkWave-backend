@@ -1,4 +1,4 @@
-package com.employee.workwave.config.Auth;
+package com.employee.workwave.config;
 
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
