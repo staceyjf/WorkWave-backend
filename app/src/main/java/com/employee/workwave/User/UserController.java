@@ -95,7 +95,6 @@ public class UserController {
             errors.addError("User", "An error occurred during sign in. Please try again");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-
     }
 
     @Operation(summary = "Get all users", description = "Return a list of all users and their roles")

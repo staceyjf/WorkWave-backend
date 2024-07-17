@@ -8,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.employee.workwave.User.UserRepository;
@@ -18,9 +19,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@Component
 public class JwtCookieFilter extends OncePerRequestFilter {
     @Autowired
-    TokenProvider tokenService;
+    TokenProvider tokenProvider;
 
     @Autowired
     UserRepository userRepo;
@@ -32,7 +34,7 @@ public class JwtCookieFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String token = extractJwtFromCookie(request);
         if (token != null && !token.isEmpty()) {
-            String userID = tokenService.validateToken(token); // get the publicID string
+            String userID = tokenProvider.validateToken(token); // get the publicID string
             UserDetails user = userRepo.findByPublicId(userID); // get the user from the db
             // creates an authentication object with the user's
             // details and authorities, which grants the user access.
@@ -49,11 +51,11 @@ public class JwtCookieFilter extends OncePerRequestFilter {
             for (Cookie cookie : request.getCookies()) {
                 // check the HTTPOnly flag which prevents cross site scripting
                 // check the Secure flag which prevents man in the middle attachs
-                if (cookie.getName().equals("accessToken") && cookie.isHttpOnly() && cookie.getSecure()) { 
+                if (cookie.getName().equals("accessToken") && cookie.isHttpOnly() && cookie.getSecure()) {
                     return cookie.getValue();
                 }
             }
         }
-        return null;  
+        return null;
     }
 }

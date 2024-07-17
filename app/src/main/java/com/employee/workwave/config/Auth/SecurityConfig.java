@@ -5,12 +5,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -25,17 +27,11 @@ public class SecurityConfig {
 	@Autowired
 	JwtCookieFilter jwtCookieFilter; // custom filter to extract JWT from cookie
 
-	@Autowired
-	private AuthenticationManagerBuilder authenticationManagerBuilder;
-
-	@Bean // AuthenticationManager is responsible for processing auth requests
-	public AuthenticationManager authenticationManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder,
-			UserDetailsService userDetailsService)
+	// interface that is used to auth user's credentials
+	@Bean
+	AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
 			throws Exception {
-		authenticationManagerBuilder
-				.userDetailsService(userDetailsService)
-				.passwordEncoder(bCryptPasswordEncoder);
-		return authenticationManagerBuilder.build();
+		return authenticationConfiguration.getAuthenticationManager();
 	}
 
 	// configures the HTTP security
@@ -57,6 +53,12 @@ public class SecurityConfig {
 		;
 
 		return http.build();
+	}
+
+	// interface for encoding passwords using BCrypt strong hashing function
+	@Bean
+	PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
 
 }
