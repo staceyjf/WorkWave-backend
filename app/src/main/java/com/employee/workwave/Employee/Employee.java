@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.employee.workwave.Department.Department;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -71,6 +70,13 @@ public class Employee implements UserDetails {
     @Column(nullable = false)
     private String address;
 
+    @Column(nullable = false)
+    private String postcode;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private STATE state;
+
     @ManyToOne()
     @JsonIgnore
     @JoinColumn(name = "department_id", nullable = false)
@@ -78,7 +84,7 @@ public class Employee implements UserDetails {
 
     // to create a user with the random publicId
     public Employee(String username, String password, ROLE role, String firstName, String middleName, String lastName,
-            String workEmail, String mobile, String address) {
+            String workEmail, String mobile, String address, String postcode, STATE state) {
         this.username = username;
         this.role = role;
         this.password = password;
@@ -89,6 +95,8 @@ public class Employee implements UserDetails {
         this.workEmail = workEmail;
         this.mobile = mobile;
         this.address = address;
+        this.postcode = postcode;
+        this.state = state;
     }
 
     // methods need to be provided for UserDetail

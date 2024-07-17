@@ -49,8 +49,6 @@ public class JwtCookieFilter extends OncePerRequestFilter {
     private String extractJwtFromCookie(HttpServletRequest request) {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                // check the HTTPOnly flag which prevents cross site scripting
-                // check the Secure flag which prevents man in the middle attachs
                 if (cookie.getName().equals("accessToken") && cookie.isHttpOnly() && cookie.getSecure()) {
                     return cookie.getValue();
                 }

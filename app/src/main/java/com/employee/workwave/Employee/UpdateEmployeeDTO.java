@@ -17,5 +17,7 @@ public class UpdateEmployeeDTO {
     private String workEmail;
     private String mobile;
     private String address;
+    private String postcode;
+    private String state;
     private Long associatedDepartmentId;
 }

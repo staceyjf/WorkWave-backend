@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,15 +30,18 @@ import com.employee.workwave.config.Auth.TokenProvider;
 import com.employee.workwave.exceptions.ServiceValidationException;
 import com.employee.workwave.exceptions.ValidationErrors;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 
 @Tag(name = "Authentication", description = "Endpoints for employee authentication")
 @RestController
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/api/v1/users")
 public class EmployeeController {
 
         @Autowired
@@ -72,7 +76,8 @@ public class EmployeeController {
                         @ApiResponse(responseCode = "401", description = "Invalid login credentials")
         })
         @PostMapping("/signin")
-        public ResponseEntity<JwtDTO> signIn(@Valid @RequestBody SignInDTO data)
+        public ResponseEntity<JwtDTO> signIn(@Valid @RequestBody SignInDTO data,
+                        @NonNull HttpServletResponse response)
                         throws ServiceValidationException {
 
                 try {
@@ -80,19 +85,27 @@ public class EmployeeController {
                                         data.getPassword());
                         Authentication authUser = authManager.authenticate(usernamePassword);
                         String accessToken = tokenProvider.generateAccessToken((Employee) authUser.getPrincipal());
-                        JwtDTO JwtToken = new JwtDTO(accessToken); // wrap the token in a JWTDTO
-                        fullLogsLogger.info("JWT token provided in sign in controller");
-                        return new ResponseEntity<>(JwtToken, HttpStatus.OK);
-                } catch (BadCredentialsException ex) {
+
+                        // create and configure the cookie
+                        Cookie cookie = new Cookie("accessToken", accessToken);
+                        cookie.setHttpOnly(true); // the HTTPOnly flag which prevents cross site scripting
+                        cookie.setSecure(true); // Secure flag which prevents man in the middle attacks
+                        cookie.setPath("/"); // Makes the cookie available on all dirs & subdirs
+                        cookie.setMaxAge(60 * 60); // Expires in 1 hour
+                        response.addCookie(cookie);
+
+                        fullLogsLogger.info("JWT token provided to cookie in sign in controller");
+                        return new ResponseEntity<>(HttpStatus.OK);
+                } catch (BadCredentialsException err) {
                         ValidationErrors errors = new ValidationErrors();
                         fullLogsLogger.error("Invalid credentials provided ",
-                                        ex.getLocalizedMessage());
+                                        err.getLocalizedMessage());
                         errors.addError("User", "Invalid credentials provided. Please update and try again.");
                         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-                } catch (AuthenticationException ex) {
+                } catch (AuthenticationException err) {
                         ValidationErrors errors = new ValidationErrors();
                         fullLogsLogger.error("An error occurred when trying to sign in: ",
-                                        ex.getLocalizedMessage());
+                                        err.getLocalizedMessage());
                         errors.addError("User", "An error occurred during sign in. Please try again");
                         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
                 }

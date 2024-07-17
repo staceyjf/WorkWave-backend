@@ -11,10 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import com.employee.workwave.Employee.Employee;
-import com.employee.workwave.Employee.EmployeeService;
 import com.employee.workwave.exceptions.ServiceValidationException;
 import com.employee.workwave.exceptions.ValidationErrors;
+import com.employee.workwave.utils.StringUtils;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
@@ -33,8 +32,8 @@ public class DepartmentService {
         ValidationErrors errors = new ValidationErrors();
         Department newDepartment = new Department();
 
-        String trimmedNameField = data.getDepartmentName().trim();
-        if (trimmedNameField.isBlank()) {
+        String trimmedCapitalisedName = StringUtils.capitalizeStringFields(data.getDepartmentName());
+        if (trimmedCapitalisedName.isBlank()) {
             errors.addError("Department", "Department field must contain a value.");
         }
 
@@ -43,7 +42,7 @@ public class DepartmentService {
         }
 
         // update with DTO data post validation & data cleaning
-        newDepartment.setDepartmentName(trimmedNameField);
+        newDepartment.setDepartmentName(trimmedCapitalisedName);
 
         // as the unique constraint is at the bd level
         try {
@@ -85,7 +84,9 @@ public class DepartmentService {
         Department foundDepartment = maybeDepartment.get();
 
         // check to see if Department field has been provided
-        String trimmedNameField = data.getDepartmentName() != null ? data.getDepartmentName().trim() : null;
+        String trimmedCapitalisedName = StringUtils.capitalizeStringFields(data.getDepartmentName()) != null
+                ? StringUtils.capitalizeStringFields(data.getDepartmentName())
+                : null;
 
         // attempt all validation before throwing an error
         if (errors.hasErrors()) {
@@ -93,8 +94,8 @@ public class DepartmentService {
         }
 
         // update with DTO fields after validation
-        if (trimmedNameField != null) {
-            foundDepartment.setDepartmentName(trimmedNameField);
+        if (trimmedCapitalisedName != null) {
+            foundDepartment.setDepartmentName(trimmedCapitalisedName);
         }
 
         Department updatedDepartment = this.repo.save(foundDepartment);

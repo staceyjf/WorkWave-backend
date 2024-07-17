@@ -37,15 +37,18 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable()) // Cross-Site Request Forgery
 				// ensure all HTTP requests are redirecting to HTTPS
-				.requiresChannel(channel -> channel.anyRequest().requiresSecure())
+				// .requiresChannel(channel -> channel.anyRequest().requiresSecure())
 				// each session is authenticated independently
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests((authorize) -> authorize // configure URL-based auth
 						.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-						.requestMatchers("/admin/**").hasAnyRole("ADMIN")
-						.requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-						.requestMatchers("/swagger-ui/**").permitAll()
-						.requestMatchers("/login").permitAll()
+						.requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN")
+						// .requestMatchers("/department/**").hasAnyRole("USER", "ADMIN")
+						.requestMatchers("/api/v1/swagger-ui/**").permitAll()
+						.requestMatchers("/api/v1/register").permitAll()
+						.requestMatchers("/api/v1/departments").permitAll()
+						.requestMatchers("/api/v1/departments/**").permitAll()
+						.requestMatchers("/api/v1/login").permitAll()
 						.anyRequest().authenticated())
 				.addFilterBefore(jwtCookieFilter, UsernamePasswordAuthenticationFilter.class);
 		;
