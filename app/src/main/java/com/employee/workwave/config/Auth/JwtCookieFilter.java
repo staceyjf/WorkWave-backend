@@ -11,7 +11,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.employee.workwave.User.UserRepository;
+import com.employee.workwave.Employee.EmployeeRepository;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,7 +25,7 @@ public class JwtCookieFilter extends OncePerRequestFilter {
     TokenProvider tokenProvider;
 
     @Autowired
-    UserRepository userRepo;
+    EmployeeRepository userRepo;
 
     // intercept once per a request
     @Override

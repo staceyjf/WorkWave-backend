@@ -1,6 +1,6 @@
 package com.employee.workwave.config.Auth;
 
-import com.employee.workwave.User.User;
+import com.employee.workwave.Employee.Employee;
 import com.employee.workwave.exceptions.ServiceValidationException;
 import com.employee.workwave.exceptions.ValidationErrors;
 
@@ -22,7 +22,7 @@ public class TokenProvider {
     @Value("${security.jwt.token.secret-key}")
     private String JWT_SECRET; // inject in env secret
 
-    public String generateAccessToken(User user) throws ServiceValidationException {
+    public String generateAccessToken(Employee user) throws ServiceValidationException {
         ValidationErrors errors = new ValidationErrors();
 
         if (JWT_SECRET == null) {

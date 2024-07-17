@@ -1,4 +1,4 @@
-package com.employee.workwave.User;
+package com.employee.workwave.Employee;
 
 import java.util.Collection;
 import java.util.List;
@@ -8,7 +8,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.employee.workwave.Department.Department;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,6 +19,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,12 +28,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "users")
+@Table(name = "employees")
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-public class User implements UserDetails  {
+public class Employee implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,18 +47,48 @@ public class User implements UserDetails  {
 
     @Column
     @Enumerated(EnumType.STRING)
-    private USERROLE role;
+    private ROLE role;
 
     @JsonIgnore
     @Column
     private String password;
 
-    // to create a user
-    public User(String username, String password, USERROLE role) {
+    @Column(nullable = false)
+    private String firstName;
+
+    @Column(nullable = true)
+    private String middleName;
+
+    @Column(nullable = false)
+    private String lastName;
+
+    @Column(nullable = false)
+    private String workEmail;
+
+    @Column(nullable = false)
+    private String mobile;
+
+    @Column(nullable = false)
+    private String address;
+
+    @ManyToOne()
+    @JoinColumn(name = "department_id", nullable = false)
+    @JsonIgnoreProperties("employees")
+    private Department associatedDepartment;
+    
+    // to create a user with the random publicId
+    public Employee(String username, String password, ROLE role, String firstName, String middleName, String lastName,
+            String workEmail, String mobile, String address) {
         this.username = username;
         this.role = role;
         this.password = password;
         this.publicId = UUID.randomUUID().toString(); // 36 characters long including 4 hyphens
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
+        this.workEmail = workEmail;
+        this.mobile = mobile;
+        this.address = address;
     }
 
     // methods need to be provided for UserDetail
@@ -86,10 +120,22 @@ public class User implements UserDetails  {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.role == USERROLE.ADMIN) {
+        if (this.role == ROLE.ADMIN) {
             return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
         }
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
+
+    // helper function to manage the bi-relationship between employee to departments
+    public void addDepartment(Department department) {
+        this.associatedDepartment = department;
+        department.getAssociatedEmployees().add(this); // add the employee to the list of existing employees
+    }
+
+    // helper function to manage the bi-relationship between Department to departments
+    public void removeDepartment(Department department) {
+        this.associatedDepartment = null;
+        department.getAssociatedEmployees().remove(this); // add the employee to the list of existing employees
+    } 
 
 }

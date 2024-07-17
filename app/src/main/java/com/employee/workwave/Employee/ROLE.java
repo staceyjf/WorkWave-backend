@@ -1,12 +1,12 @@
-package com.employee.workwave.User;
+package com.employee.workwave.Employee;
 
-public enum USERROLE {
+public enum ROLE {
     ADMIN("admin"),
     USER("user");
 
     private String role;
 
-    USERROLE(String role) {
+    ROLE(String role) {
         this.role = role;
     }
 

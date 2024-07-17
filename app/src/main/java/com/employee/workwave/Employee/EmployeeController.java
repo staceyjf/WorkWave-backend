@@ -1,4 +1,4 @@
-package com.employee.workwave.User;
+package com.employee.workwave.Employee;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,16 +33,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-@Tag(name = "Authentication", description = "Endpoints for user authentication")
+@Tag(name = "Authentication", description = "Endpoints for employee authentication")
 @RestController
 @RequestMapping("/api/v1/admin")
-public class UserController {
+public class EmployeeController {
 
     @Autowired
     private AuthenticationManager authManager;
 
     @Autowired
-    private UserService userService;
+    private EmployeeService employeeService;
 
     @Autowired
     private TokenProvider tokenProvider;
@@ -50,21 +50,21 @@ public class UserController {
     private static final Logger fullLogsLogger = LogManager.getLogger("fullLogs");
 
     // create a new user via request body
-    @Operation(summary = "Register a new user", description = "Create a new user account and return the user details")
+    @Operation(summary = "Register a new employee", description = "Create a new account and return the user details")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User created"),
+            @ApiResponse(responseCode = "201", description = "Employee created"),
             @ApiResponse(responseCode = "400", description = "Invalid request data")
     })
     @PostMapping("/register")
     public ResponseEntity<UserDetails> register(@Valid @RequestBody RegisterDTO data)
             throws ServiceValidationException {
-        UserDetails createdUser = userService.register(data);
+        UserDetails createdUser = employeeService.register(data);
         fullLogsLogger.info("sign up controller responded with a new user: " + createdUser);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
     // receive user details, authenticate via AuthManager and then generate a token
-    @Operation(summary = "User sign in", description = "Authenticate a user and return a cookie based JWT token")
+    @Operation(summary = "Employee sign in", description = "Authenticate a user and return a cookie based JWT token")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful login"),
             @ApiResponse(responseCode = "401", description = "Invalid login credentials")
@@ -74,11 +74,10 @@ public class UserController {
             throws ServiceValidationException {
 
         try {
-            Authentication usernamePassword = new UsernamePasswordAuthenticationToken(data.username(), data.password());
+            Authentication usernamePassword = new UsernamePasswordAuthenticationToken(data.getUsername(),
+                    data.getPassword());
             Authentication authUser = authManager.authenticate(usernamePassword);
-            fullLogsLogger.info("this is authUser " + authUser);
-
-            String accessToken = tokenProvider.generateAccessToken((User) authUser.getPrincipal());
+            String accessToken = tokenProvider.generateAccessToken((Employee) authUser.getPrincipal());
             JwtDTO JwtToken = new JwtDTO(accessToken); // wrap the token in a JWTDTO
             fullLogsLogger.info("JWT token provided in sign in controller");
             return new ResponseEntity<>(JwtToken, HttpStatus.OK);
@@ -97,26 +96,26 @@ public class UserController {
         }
     }
 
-    @Operation(summary = "Get all users", description = "Return a list of all users and their roles")
+    @Operation(summary = "Get all employees", description = "Return a list of all employees and their roles")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation")
     })
-    @GetMapping("/allusers")
-    public ResponseEntity<List<User>> findAllUsers() {
-        List<User> allUsers = this.userService.findAllUsers();
+    @GetMapping("/allemployees")
+    public ResponseEntity<List<Employee>> findAllUsers() {
+        List<Employee> allUsers = employeeService.findAllUsers();
         fullLogsLogger.info("findAllUsers Controller responded with all Users");
         return new ResponseEntity<>(allUsers, HttpStatus.OK);
     }
 
-    @Operation(summary = "Get a user by ID", description = "Return the details of a user with the specified ID")
+    @Operation(summary = "Get a employee by ID", description = "Return the details of an employee with the specified ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<User> findUserById(@PathVariable Long id) {
-        Optional<User> maybeUser = this.userService.findById(id);
-        User foundUser = maybeUser
+    public ResponseEntity<Employee> findUserById(@PathVariable Long id) {
+        Optional<Employee> maybeUser = employeeService.findById(id);
+        Employee foundUser = maybeUser
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         fullLogsLogger.info("findUserById responses with the found postcode:" + foundUser);
         return new ResponseEntity<>(foundUser, HttpStatus.OK);

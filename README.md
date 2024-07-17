@@ -57,8 +57,8 @@ This API works hand in hand with the Typescript React app (available [here](http
 
 Understanding the relationship of the data was an important starting point, and it was determined that a normalized data structure would be the most suitable approach to minimize redundancy and dependency. I took the following steps:
 
-1. Reviewed the fields required for authentication and how they could be overlaid with employee information to avoid data duplication for the `User` Entity.
-2. Separated out the work-specific details of the role into an `Employee` Entity to hold items such as contract type (contract vs. permanent) and employment type (part-time vs. full-time).
+1. Reviewed the fields required for authentication and how they could be overlaid with employee information to create a streamlined user based `Employee` entity
+2. Separated out the work-specific details of the role into an `Contract` Entity to hold items such as contract type (contract vs. permanent) and employment type (part-time vs. full-time).
 
 <div align="center">
   <img src="./planning/workwave_erd.png" style="max-width: 800px;" alt="ERD for workwave API">

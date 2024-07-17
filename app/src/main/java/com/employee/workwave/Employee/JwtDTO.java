@@ -1,4 +1,4 @@
-package com.employee.workwave.User;
+package com.employee.workwave.Employee;
 
 public record JwtDTO(String accessToken) {
 
