@@ -115,7 +115,7 @@ public class EmployeeController {
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Successful operation")
         })
-        @GetMapping("/allemployees")
+        @GetMapping("/all")
         public ResponseEntity<List<Employee>> findAllUsers() {
                 List<Employee> allUsers = employeeService.findAllUsers();
                 fullLogsLogger.info("findAllUsers Controller responded with all Users");
@@ -129,6 +129,7 @@ public class EmployeeController {
         })
         @GetMapping("/{id}")
         public ResponseEntity<Employee> findUserById(@PathVariable Long id) {
+                fullLogsLogger.info(id);
                 Optional<Employee> maybeUser = employeeService.findById(id);
                 Employee foundUser = maybeUser
                                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));

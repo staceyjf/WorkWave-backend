@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.employee.workwave.Department.Department;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,7 +32,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "associatedDepartment")
 public class Employee implements UserDetails {
 
     @Id
@@ -49,7 +50,7 @@ public class Employee implements UserDetails {
     private ROLE role;
 
     @JsonIgnore
-    @Column
+    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
@@ -78,8 +79,8 @@ public class Employee implements UserDetails {
     private STATE state;
 
     @ManyToOne()
-    @JsonIgnore
     @JoinColumn(name = "department_id", nullable = false)
+    @JsonIgnoreProperties("associatedEmployees")
     private Department associatedDepartment;
 
     // to create a user with the random publicId
@@ -99,33 +100,55 @@ public class Employee implements UserDetails {
         this.state = state;
     }
 
+    // without the optional middle name
+    public Employee(String username, String password, ROLE role, String firstName, String lastName,
+            String workEmail, String mobile, String address, String postcode, STATE state) {
+        this.username = username;
+        this.role = role;
+        this.password = password;
+        this.publicId = UUID.randomUUID().toString(); // 36 characters long including 4 hyphens
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.workEmail = workEmail;
+        this.mobile = mobile;
+        this.address = address;
+        this.postcode = postcode;
+        this.state = state;
+    }
+
     // methods need to be provided for UserDetail
     // TODO: look at refining these methods with custom business logic
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public String getPassword() {
         return password;
     }
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.role == ROLE.ADMIN) {

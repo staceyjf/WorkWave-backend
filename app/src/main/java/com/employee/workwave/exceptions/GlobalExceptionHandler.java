@@ -37,15 +37,21 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GlobalError> handleNotFoundEntity(Exception ex) {
         String errorMessage = ex.getMessage() != null ? ex.getMessage()
                 : "The requested resource could not be found. Please verify ID or parameters.";
-        return createErrorResponse(HttpStatus.NOT_FOUND, ex, "Error", errorMessage);
+        return createErrorResponse(HttpStatus.NOT_FOUND, ex, "Not found Error", errorMessage);
     }
 
     // Handle exceptions that return a 400 error (bad request)
-    @ExceptionHandler({ HttpMessageNotReadableException.class, MethodArgumentNotValidException.class,
+    @ExceptionHandler({ HttpMessageNotReadableException.class,
             MissingServletRequestParameterException.class })
     public ResponseEntity<GlobalError> handleBadRequestExceptions(Exception ex) {
-        return createErrorResponse(HttpStatus.BAD_REQUEST, ex, "Error",
-                "Invalid request. Please check the request and try again.");
+        return createErrorResponse(HttpStatus.BAD_REQUEST, ex, "Invalid request",
+                "Please check the request and try again.");
+    }
+
+    @ExceptionHandler({ MethodArgumentNotValidException.class })
+    public ResponseEntity<GlobalError> handleValidationErrors(Exception ex) {
+        return createErrorResponse(HttpStatus.BAD_REQUEST, ex, "Request Validation Error",
+                "Please review request body and try again.");
     }
 
     // Handle other errors with a generic message

@@ -42,13 +42,14 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests((authorize) -> authorize // configure URL-based auth
 						.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-						.requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN")
-						// .requestMatchers("/department/**").hasAnyRole("USER", "ADMIN")
 						.requestMatchers("/api/v1/swagger-ui/**").permitAll()
-						.requestMatchers("/api/v1/register").permitAll()
-						.requestMatchers("/api/v1/departments").permitAll()
-						.requestMatchers("/api/v1/departments/**").permitAll()
-						.requestMatchers("/api/v1/login").permitAll()
+						.requestMatchers("/api/v1/users/register").permitAll()
+						.requestMatchers("/api/v1/users/signin").permitAll()
+						.requestMatchers("/api/v1/users/**").hasRole("ADMIN")
+						.requestMatchers("/api/v1/departments").hasAnyRole("ADMIN", "USER")
+						.requestMatchers("/api/v1/departments/**").hasRole("ADMIN")
+						.requestMatchers("/api/v1/employee").hasAnyRole("ADMIN", "USER")
+						.requestMatchers("/api/v1/employee/**").hasRole("ADMIN")
 						.anyRequest().authenticated())
 				.addFilterBefore(jwtCookieFilter, UsernamePasswordAuthenticationFilter.class);
 		;

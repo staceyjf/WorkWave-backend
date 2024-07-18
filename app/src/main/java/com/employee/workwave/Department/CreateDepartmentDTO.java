@@ -1,5 +1,6 @@
 package com.employee.workwave.Department;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateDepartmentDTO {
-
+    @NotBlank
     private String departmentName;
 
 }

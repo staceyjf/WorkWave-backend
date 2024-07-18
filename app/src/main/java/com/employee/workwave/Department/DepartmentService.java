@@ -8,7 +8,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.employee.workwave.exceptions.ServiceValidationException;
@@ -16,7 +15,6 @@ import com.employee.workwave.exceptions.ValidationErrors;
 import com.employee.workwave.utils.StringUtils;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 
 @Service
@@ -32,9 +30,17 @@ public class DepartmentService {
         ValidationErrors errors = new ValidationErrors();
         Department newDepartment = new Department();
 
-        String trimmedCapitalisedName = StringUtils.capitalizeStringFields(data.getDepartmentName());
-        if (trimmedCapitalisedName.isBlank()) {
+        if (data.getDepartmentName().isBlank()) {
             errors.addError("Department", "Department field must contain a value.");
+        }
+
+        String trimmedCapitalisedName = StringUtils.capitalizeStringFields(data.getDepartmentName());
+
+        // check if its unique
+        Optional<Department> maybeDepartment = this.repo.findByDepartmentName(trimmedCapitalisedName);
+
+        if (maybeDepartment.isPresent()) {
+            errors.addError("Department", "Department already exists. Please review and re-add if needed.");
         }
 
         if (!errors.isEmpty()) {
@@ -49,12 +55,8 @@ public class DepartmentService {
             Department savedDepartment = this.repo.save(newDepartment);
             fullLogsLogger.info("Created new department in db with ID: " + savedDepartment.getId());
             return savedDepartment;
-        } catch (DataIntegrityViolationException err) {
-            if (err.getCause() instanceof ConstraintViolationException) {
-                errors.addError("Department", "Department already exists. Please review and re-add if needed.");
-            } else {
-                errors.addError("Department", "There was an issue saving a new department to the database");
-            }
+        } catch (Exception err) {
+            errors.addError("Department", "There was an issue saving a new department to the database");
             throw new ServiceValidationException(errors);
         }
 

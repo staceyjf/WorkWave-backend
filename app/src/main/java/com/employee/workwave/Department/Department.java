@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.employee.workwave.Employee.Employee;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,7 +23,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "associatedEmployees")
 public class Department implements Comparable<Department> {
 
     @Id
@@ -34,7 +33,8 @@ public class Department implements Comparable<Department> {
     @Column(nullable = false, unique = true)
     private String departmentName;
 
-    @OneToMany(mappedBy = "associatedDepartment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "associatedDepartment")
+    @JsonIgnoreProperties("associatedDepartment")
     private List<Employee> associatedEmployees = new ArrayList<>();
 
     // using the comparable interface to enable sorting by the postcode field

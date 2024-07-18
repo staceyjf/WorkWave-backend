@@ -16,6 +16,7 @@ import com.employee.workwave.Department.Department;
 import com.employee.workwave.Department.DepartmentService;
 import com.employee.workwave.exceptions.ServiceValidationException;
 import com.employee.workwave.exceptions.ValidationErrors;
+import com.employee.workwave.utils.StringUtils;
 
 import jakarta.validation.Valid;
 
@@ -37,22 +38,20 @@ public class EmployeeService implements UserDetailsService {
 
     public UserDetails register(@Valid RegisterDTO data) throws ServiceValidationException {
         ValidationErrors errors = new ValidationErrors();
+
         // check to see if the username already exists
         if (data.getUsername() != null && repo.findByUsername(data.getUsername()) != null) {
             errors.addError("User", "Username already exists");
-            throw new ServiceValidationException(errors);
         }
 
         // email needs to be in a valid email format
         if (!data.getWorkEmail().matches("^(\\w+@\\w+\\.\\w{2,3})$")) {
             errors.addError("User", "Work email is not in a valid format");
-            throw new ServiceValidationException(errors);
         }
 
         // mobile needs to be 10 digital numerical format
         if (!data.getMobile().matches("^(?:\\d{10})$")) {
             errors.addError("User", "Mobile number is not in a 10 digit format");
-            throw new ServiceValidationException(errors);
         }
 
         ROLE role = null;
@@ -61,7 +60,6 @@ public class EmployeeService implements UserDetailsService {
         } catch (IllegalArgumentException e) {
             errors.addError("User",
                     "A role match could not be found. Please consult the documentation for accepted values for roles.");
-            throw new ServiceValidationException(errors);
         }
 
         STATE state = null;
@@ -70,7 +68,6 @@ public class EmployeeService implements UserDetailsService {
         } catch (IllegalArgumentException e) {
             errors.addError("User",
                     "A state match could not be found. Please consult the documentation for accepted values for Australian states.");
-            throw new ServiceValidationException(errors);
         }
 
         if (!data.getPostcode().matches("[\\d]{4}")) {
@@ -86,9 +83,15 @@ public class EmployeeService implements UserDetailsService {
         Employee newEmployee = new Employee(
                 data.getUsername(), encryptedPassword,
                 role,
-                data.getFirstName(), data.getMiddleName().isEmpty() ? null : data.getMiddleName(),
-                data.getLastName(), data.getWorkEmail(), data.getMobile(), data.getAddress(), data.getPostcode(),
+                StringUtils.capitalizeStringFields(
+                        data.getFirstName()),
+                StringUtils.capitalizeStringFields(data.getLastName()), data.getWorkEmail(), data.getMobile(),
+                data.getAddress(), data.getPostcode(),
                 state);
+
+        if (data.getMiddleName() != null) {
+            newEmployee.setMiddleName(StringUtils.capitalizeStringFields(data.getMiddleName()));
+        }
 
         if (data.getAssociatedDepartmentId() != null) {
             Optional<Department> maybeDepartment = this.departmentService.findById(data.getAssociatedDepartmentId());
@@ -127,19 +130,16 @@ public class EmployeeService implements UserDetailsService {
             // check to see if the username already exists
             if (data.getUsername() != null && repo.findByUsername(data.getUsername()) != null) {
                 errors.addError("User", "Username already exists");
-                throw new ServiceValidationException(errors);
             }
 
             // email needs to be in a valid email format
-            if (data.getWorkEmail() != null && data.getWorkEmail().matches("^(\\w+@\\w+\\.\\w{2,3})$")) {
+            if (data.getWorkEmail() != null && !data.getWorkEmail().matches("^(\\w+@\\w+\\.\\w{2,3})$")) {
                 errors.addError("User", "Work email is not in a valid format");
-                throw new ServiceValidationException(errors);
             }
 
             // mobile needs to be 10 digital numerical format
-            if (data.getMobile() != null && data.getMobile().matches("^(?:\\d{10})$")) {
+            if (data.getMobile() != null && !data.getMobile().matches("^(?:\\d{10})$")) {
                 errors.addError("User", "Mobile number is not in a 10 digit format");
-                throw new ServiceValidationException(errors);
             }
 
             ROLE role = null;
@@ -161,11 +161,11 @@ public class EmployeeService implements UserDetailsService {
                 employee.setPassword(encryptedPassword);
             }
             if (data.getFirstName() != null)
-                employee.setFirstName(data.getFirstName());
+                employee.setFirstName(StringUtils.capitalizeStringFields(data.getFirstName()));
             if (data.getMiddleName() != null)
-                employee.setMiddleName(data.getMiddleName());
+                employee.setMiddleName(StringUtils.capitalizeStringFields(data.getMiddleName()));
             if (data.getLastName() != null)
-                employee.setLastName(data.getLastName());
+                employee.setLastName(StringUtils.capitalizeStringFields(data.getLastName()));
             if (data.getWorkEmail() != null)
                 employee.setWorkEmail(data.getWorkEmail());
             if (data.getMobile() != null)

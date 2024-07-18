@@ -49,7 +49,9 @@ public class JwtCookieFilter extends OncePerRequestFilter {
     private String extractJwtFromCookie(HttpServletRequest request) {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals("accessToken") && cookie.isHttpOnly() && cookie.getSecure()) {
+                if (cookie.getName().equals("accessToken")) {
+                    // can only add checks for secure and httponly with the add of
+                    // https
                     return cookie.getValue();
                 }
             }
