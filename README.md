@@ -64,6 +64,11 @@ Understanding the relationship of the data was an important starting point, and 
   <img src="./planning/workwave_erd.png" style="max-width: 800px;" alt="ERD for workwave API">
 </div>
 
+### Business assumptions
+1. Full-time permanent employees can only have one contract at a time (unless the end date is set before the start date of a new contract)
+2. Full-time contracting employees can only start a new contract once the existing contract has expired.
+3. The minimum length of a contract needs to be one calendar day
+
 <!-- ### Design inspiration
 
 I took inspiration from the existing Aus-Post service to help shape my design which can be seen below:

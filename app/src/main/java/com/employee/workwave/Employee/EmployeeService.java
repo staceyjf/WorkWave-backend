@@ -99,8 +99,8 @@ public class EmployeeService implements UserDetailsService {
             newEmployee.setMiddleName(StringUtils.capitalizeStringFields(data.getMiddleName()));
         }
 
-        if (data.getAssociatedDepartmentId() != null) {
-            Optional<Department> maybeDepartment = this.departmentService.findById(data.getAssociatedDepartmentId());
+        if (data.getDepartmentId() != null) {
+            Optional<Department> maybeDepartment = this.departmentService.findById(data.getDepartmentId());
             newEmployee.addDepartment(maybeDepartment.get());
         }
 
@@ -184,9 +184,9 @@ public class EmployeeService implements UserDetailsService {
                 employee.setWorkEmail(data.getWorkEmail());
             if (data.getMobile() != null)
                 employee.setMobile(data.getMobile());
-            if (data.getAssociatedDepartmentId() != null) {
+            if (data.getDepartmentId() != null) {
                 Optional<Department> maybeDepartment = this.departmentService
-                        .findById(data.getAssociatedDepartmentId());
+                        .findById(data.getDepartmentId());
                 employee.addDepartment(maybeDepartment.get());
             }
 

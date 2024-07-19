@@ -68,8 +68,8 @@ public class DepartmentController {
         })
         @GetMapping("/{id}")
         public ResponseEntity<Department> findDepartmentsById(@PathVariable Long id) {
-                Optional<Department> maybePost = this.departmentService.findById(id);
-                Department foundDepartment = maybePost
+                Optional<Department> maybeDepartment = this.departmentService.findById(id);
+                Department foundDepartment = maybeDepartment
                                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                                 "Department not found"));
                 fullLogsLogger.info("findDepartmentsById responses with the found Department:" + foundDepartment);

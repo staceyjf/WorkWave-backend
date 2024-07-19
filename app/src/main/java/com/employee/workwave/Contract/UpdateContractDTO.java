@@ -1,8 +1,6 @@
 package com.employee.workwave.Contract;
 
 import java.time.LocalDate;
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,5 +19,5 @@ public class UpdateContractDTO {
 
     private LocalDate endDate;
 
-    private List<Long> associatedEmployeeIds;
+    private Long employeeId;
 }

@@ -40,6 +40,6 @@ public class RegisterDTO {
 
         @NotBlank
         private String state;
-        
-        private Long associatedDepartmentId;
+
+        private Long departmentId;
 }
