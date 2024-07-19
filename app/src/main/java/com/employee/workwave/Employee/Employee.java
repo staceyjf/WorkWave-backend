@@ -1,5 +1,6 @@
 package com.employee.workwave.Employee;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -8,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.employee.workwave.Contract.Contract;
 import com.employee.workwave.Department.Department;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -21,6 +23,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,14 +35,14 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(exclude = "associatedDepartment")
-public class Employee implements UserDetails {
+@ToString(exclude = { "associatedDepartment", "associatedContracts" })
+public class Employee implements UserDetails, Comparable<Employee> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(updatable = false)
+    @Column(updatable = false, unique = true)
     private String publicId;
 
     @Column(unique = true)
@@ -62,7 +65,7 @@ public class Employee implements UserDetails {
     @Column(nullable = false)
     private String lastName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String workEmail;
 
     @Column(nullable = false)
@@ -82,6 +85,10 @@ public class Employee implements UserDetails {
     @JoinColumn(name = "department_id", nullable = false)
     @JsonIgnoreProperties("associatedEmployees")
     private Department associatedDepartment;
+
+    @OneToMany(mappedBy = "associatedEmployee")
+    @JsonIgnoreProperties("associatedEmployee")
+    private List<Contract> associatedContracts = new ArrayList<>();
 
     // to create a user with the random publicId
     public Employee(String username, String password, ROLE role, String firstName, String middleName, String lastName,
@@ -168,6 +175,12 @@ public class Employee implements UserDetails {
     public void removeDepartment(Department department) {
         this.associatedDepartment = null;
         department.getAssociatedEmployees().remove(this); // add the employee to the list of existing employees
+    }
+
+    // using the comparable interface to enable sorting by the postcode field
+    @Override
+    public int compareTo(Employee other) {
+        return this.firstName.compareTo(other.firstName);
     }
 
 }

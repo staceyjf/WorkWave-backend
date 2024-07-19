@@ -30,10 +30,6 @@ public class DepartmentService {
         ValidationErrors errors = new ValidationErrors();
         Department newDepartment = new Department();
 
-        if (data.getDepartmentName().isBlank()) {
-            errors.addError("Department", "Department field must contain a value.");
-        }
-
         String trimmedCapitalisedName = StringUtils.capitalizeStringFields(data.getDepartmentName());
 
         // check if its unique

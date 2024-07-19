@@ -1,5 +1,6 @@
 package com.employee.workwave.Employee;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +43,11 @@ public class EmployeeService implements UserDetailsService {
         // check to see if the username already exists
         if (data.getUsername() != null && repo.findByUsername(data.getUsername()) != null) {
             errors.addError("User", "Username already exists");
+        }
+
+        // check to see if the email has already been used
+        if (data.getWorkEmail() != null && repo.findByWorkEmail(data.getWorkEmail()) != null) {
+            errors.addError("User", "Work email needs to be unique");
         }
 
         // email needs to be in a valid email format
@@ -111,7 +117,10 @@ public class EmployeeService implements UserDetailsService {
     }
 
     public List<Employee> findAllUsers() {
-        return this.repo.findAll();
+        List<Employee> employees = this.repo.findAll();
+        Collections.sort(employees);
+        fullLogsLogger.info("Sourced all employees from the db. Total count: " + employees.size());
+        return employees;
     }
 
     public Optional<Employee> findById(Long id) {
@@ -135,6 +144,11 @@ public class EmployeeService implements UserDetailsService {
             // email needs to be in a valid email format
             if (data.getWorkEmail() != null && !data.getWorkEmail().matches("^(\\w+@\\w+\\.\\w{2,3})$")) {
                 errors.addError("User", "Work email is not in a valid format");
+            }
+
+            // check to see if the email has already been used
+            if (data.getWorkEmail() != null && repo.findByWorkEmail(data.getWorkEmail()) != null) {
+                errors.addError("User", "Work email needs to be unique");
             }
 
             // mobile needs to be 10 digital numerical format
