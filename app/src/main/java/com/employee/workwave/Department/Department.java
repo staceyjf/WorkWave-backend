@@ -33,7 +33,9 @@ public class Department implements Comparable<Department> {
     @Column(nullable = false, unique = true)
     private String departmentName;
 
-    @OneToMany(mappedBy = "associatedDepartment")
+    @OneToMany(mappedBy = "associatedDepartment") // TODO: review if merge or persist is needed
+                                                  // eg would i save/update new employees
+                                                  // nested within departments
     @JsonIgnoreProperties("associatedDepartment")
     private List<Employee> associatedEmployees = new ArrayList<>();
 

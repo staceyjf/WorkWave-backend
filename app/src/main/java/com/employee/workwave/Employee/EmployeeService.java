@@ -104,6 +104,8 @@ public class EmployeeService implements UserDetailsService {
             newEmployee.addDepartment(maybeDepartment.get());
         }
 
+        fullLogsLogger.info(newEmployee);
+
         try {
             Employee savedEmployee = repo.save(newEmployee);
             fullLogsLogger.info("New employee saved to the db");

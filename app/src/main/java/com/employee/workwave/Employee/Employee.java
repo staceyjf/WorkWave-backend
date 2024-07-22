@@ -14,6 +14,7 @@ import com.employee.workwave.Department.Department;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -82,11 +83,13 @@ public class Employee implements UserDetails, Comparable<Employee> {
     private STATE state;
 
     @ManyToOne()
-    @JoinColumn(name = "department_id", nullable = false)
+    @JoinColumn(name = "department_id", nullable = true)
     @JsonIgnoreProperties("associatedEmployees")
     private Department associatedDepartment;
 
-    @OneToMany(mappedBy = "associatedEmployee")
+    @OneToMany(mappedBy = "associatedEmployee", cascade = CascadeType.REMOVE) // as contract only exist in relation to an
+                                                                           // employee eg if an employee is deleted, the
+                                                                           // contract is deleted eg no orphan contracts
     @JsonIgnoreProperties("associatedEmployee")
     private List<Contract> associatedContracts = new ArrayList<>();
 

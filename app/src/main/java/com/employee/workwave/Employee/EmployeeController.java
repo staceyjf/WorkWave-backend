@@ -41,7 +41,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Authentication", description = "Endpoints for employee authentication")
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/user-management/employees")
 public class EmployeeController {
 
         @Autowired
@@ -115,7 +115,7 @@ public class EmployeeController {
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Successful operation")
         })
-        @GetMapping("/all")
+        @GetMapping
         public ResponseEntity<List<Employee>> findAllUsers() {
                 List<Employee> allUsers = employeeService.findAllUsers();
                 fullLogsLogger.info("findAllUsers Controller responded with all Users");

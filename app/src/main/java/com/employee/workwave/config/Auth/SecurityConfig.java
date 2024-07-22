@@ -44,15 +44,14 @@ public class SecurityConfig {
 						.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
 						.requestMatchers("/api-docs").permitAll()
 						.requestMatchers("/swagger-ui/**").permitAll()
-						.requestMatchers("/api/v1/users/register").permitAll()
-						.requestMatchers("/api/v1/users/signin").permitAll()
-						.requestMatchers("/api/v1/users/**").hasRole("ADMIN")
-						.requestMatchers("/api/v1/departments").hasAnyRole("ADMIN", "USER")
-						.requestMatchers("/api/v1/departments/**").hasRole("ADMIN")
-						.requestMatchers("/api/v1/employee").hasAnyRole("ADMIN", "USER")
-						.requestMatchers("/api/v1/employee/**").hasRole("ADMIN")
-						.requestMatchers("/api/v1/contract").hasAnyRole("ADMIN", "USER")
-						.requestMatchers("/api/v1/contract/**").hasRole("ADMIN")
+						.requestMatchers("/api/v1/user-management/employees/register").permitAll()
+						.requestMatchers("/api/v1/user-management/employees/signin").permitAll()
+						.requestMatchers("/api/v1/user-management/employees/**").hasRole("ADMIN")
+						.requestMatchers("/api/v1/department-management/departments").hasAnyRole("ADMIN",
+								"USER")
+						.requestMatchers("/api/v1/department-management/departments/**").hasRole("ADMIN")
+						.requestMatchers("/api/v1/contract-management/contracts").hasAnyRole("ADMIN", "USER")
+						.requestMatchers("/api/v1/contract-management/contracts/**").hasRole("ADMIN")
 						.anyRequest().authenticated())
 				.addFilterBefore(jwtCookieFilter, UsernamePasswordAuthenticationFilter.class);
 		;

@@ -36,7 +36,7 @@ public class DepartmentService {
         Optional<Department> maybeDepartment = this.repo.findByDepartmentName(trimmedCapitalisedName);
 
         if (maybeDepartment.isPresent()) {
-            errors.addError("Department", "Department already exists. Please review and re-add if needed.");
+            errors.addError("Unique Constraint", "Department name already exists. Please review and re-add.");
         }
 
         if (!errors.isEmpty()) {

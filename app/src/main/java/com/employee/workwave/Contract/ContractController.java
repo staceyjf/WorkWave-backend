@@ -29,7 +29,7 @@ import jakarta.validation.Valid;
 
 @Tag(name = "Contract", description = "Endpoints for managing contracts.")
 @RestController
-@RequestMapping("/api/v1/contracts")
+@RequestMapping("/api/v1/contract-management/contracts")
 public class ContractController {
         @Autowired
         private ContractService contractService;

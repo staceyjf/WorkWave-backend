@@ -29,7 +29,7 @@ import jakarta.validation.Valid;
 
 @Tag(name = "Department", description = "Endpoints for managing departments.")
 @RestController
-@RequestMapping("/api/v1/departments")
+@RequestMapping("/api/v1/department-management/departments")
 public class DepartmentController {
         @Autowired
         private DepartmentService departmentService;

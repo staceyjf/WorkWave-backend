@@ -20,13 +20,13 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 @Service
 public class TokenProvider {
     @Value("${security.jwt.token.secret-key}")
-    private String JWT_SECRET; // inject in env secret
+    private String secretKey; // inject in env secret
 
     public String generateAccessToken(Employee user) throws ServiceValidationException {
         ValidationErrors errors = new ValidationErrors();
 
-        if (JWT_SECRET == null) {
-            errors.addError("User", "JWT_SECRET is null.");
+        if (secretKey == null) {
+            errors.addError("User", "secretKey is null.");
             throw new ServiceValidationException(errors);
         }
 
@@ -41,7 +41,7 @@ public class TokenProvider {
         }
 
         try {
-            Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET); // uses Hash-based Message Auth Code
+            Algorithm algorithm = Algorithm.HMAC256(secretKey); // uses Hash-based Message Auth Code
 
             return JWT.create()
                     .withSubject(user.getPublicId()) // represents who the token is associated with
@@ -56,7 +56,7 @@ public class TokenProvider {
 
     public String validateToken(String token) {
         try {
-            Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET);
+            Algorithm algorithm = Algorithm.HMAC256(secretKey);
             return JWT.require(algorithm)
                     .build() // return a verifier
                     .verify(token)

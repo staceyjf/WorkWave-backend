@@ -127,6 +127,7 @@ public class ContractService {
 
             CONTRACTTYPE contracttype = null;
             try {
+                if (data.getContractType() != null)
                 contracttype = CONTRACTTYPE.valueOf(data.getContractType().toUpperCase());
             } catch (IllegalArgumentException e) {
                 errors.addError("Contract",
@@ -135,15 +136,16 @@ public class ContractService {
 
             EMPLOYMENTTYPE employmentType = null;
             try {
+                if (data.getEmploymentType() != null)
                 employmentType = EMPLOYMENTTYPE.valueOf(data.getEmploymentType().toUpperCase());
             } catch (IllegalArgumentException e) {
                 errors.addError("Contract",
                         "A employment type match could not be found. Please consult the documentation for accepted values for employment type.");
             }
 
-            if (endDate != null && endDate.isBefore(startDate)) {
-                errors.addError("Contract",
-                        "End date needs to be post start date");
+            if (endDate != null
+                    && (startDate != null ? endDate.isBefore(startDate) : endDate.isBefore(contract.getStartDate()))) {
+                errors.addError("Contract", "End date needs to be post start date");
             }
 
             if (startDate != null && this.repo.hasCurrentContract(employeeId, startDate)) {
