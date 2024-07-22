@@ -125,6 +125,7 @@ public class EmployeeController {
         @Operation(summary = "Get a employee by ID", description = "Return the details of an employee with the specified ID")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Successful operation"),
+                        @ApiResponse(responseCode = "403", description = "Access denied due to insufficient permissions"),
                         @ApiResponse(responseCode = "404", description = "User not found")
         })
         @GetMapping("/{id}")
@@ -140,6 +141,8 @@ public class EmployeeController {
         @Operation(summary = "Update an employee by ID", description = "Update an employee by ID")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Operation successful"),
+                        @ApiResponse(responseCode = "400", description = "Invalid request data"),
+                        @ApiResponse(responseCode = "403", description = "Access denied due to insufficient permissions"),
                         @ApiResponse(responseCode = "404", description = "Employee not found"),
         })
         @PatchMapping("/{id}")
@@ -157,6 +160,7 @@ public class EmployeeController {
         @Operation(summary = "Delete an employee by ID", description = "Delete an Employee by ID")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "204", description = "Employee deleted"),
+                        @ApiResponse(responseCode = "403", description = "Access denied due to insufficient permissions"),
                         @ApiResponse(responseCode = "404", description = "Employee not found"),
         })
         @DeleteMapping("/{id}")

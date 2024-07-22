@@ -42,42 +42,41 @@ public class EmployeeService implements UserDetailsService {
 
         // check to see if the username already exists
         if (data.getUsername() != null && repo.findByUsername(data.getUsername()) != null) {
-            errors.addError("User", "Username already exists");
+            errors.addError("RequestValidationError", "Username already exists");
         }
 
         // check to see if the email has already been used
         if (data.getWorkEmail() != null && repo.findByWorkEmail(data.getWorkEmail()) != null) {
-            errors.addError("User", "Work email needs to be unique");
+            errors.addError("RequestValidationError", "Work email needs to be unique");
         }
 
         // email needs to be in a valid email format
         if (!data.getWorkEmail().matches("^(\\w+@\\w+\\.\\w{2,3})$")) {
-            errors.addError("User", "Work email is not in a valid format");
+            errors.addError("RequestValidationError", "Work email is not in a valid format");
         }
 
         // mobile needs to be 10 digital numerical format
         if (!data.getMobile().matches("^(?:\\d{10})$")) {
-            errors.addError("User", "Mobile number is not in a 10 digit format");
+            errors.addError("RequestValidationError", "Mobile number needs to be in a 10 digit format");
         }
 
         ROLE role = null;
         try {
             role = ROLE.valueOf(data.getRole().toUpperCase());
         } catch (IllegalArgumentException e) {
-            errors.addError("User",
-                    "A role match could not be found. Please consult the documentation for accepted values for roles.");
+            errors.addError("RequestValidationError",
+                    "A role match could not be found. Please consult the documentation for accepted values for roles");
         }
 
-        STATE state = null;
-        try {
-            state = STATE.from(data.getState());
-        } catch (IllegalArgumentException e) {
-            errors.addError("User",
-                    "A state match could not be found. Please consult the documentation for accepted values for Australian states.");
-        }
+        STATE state = STATE.from(data.getState());
+
+        if (state == null)
+            errors.addError("RequestValidationError",
+                    "A state match could not be found. Please consult the documentation for accepted values for Australian states");
 
         if (!data.getPostcode().matches("[\\d]{4}")) {
-            errors.addError("User", "Postcode field should only contain numbers and be 4 numbers in length.");
+            errors.addError("RequestValidationError",
+                    "Postcode field should only contain numbers and be 4 numbers in length");
         }
 
         if (!errors.isEmpty()) {
@@ -113,7 +112,7 @@ public class EmployeeService implements UserDetailsService {
         } catch (Exception ex) {
             fullLogsLogger.error("An error occurred when trying to sign up and create a new user in the db: ",
                     ex.getLocalizedMessage());
-            errors.addError("User", "An error occurred during sign up. Please try again");
+            errors.addError("UserRegistrationException", "An error occurred during sign up. Please try again");
             throw new ServiceValidationException(errors);
         }
     }
@@ -140,28 +139,46 @@ public class EmployeeService implements UserDetailsService {
 
             // check to see if the username already exists
             if (data.getUsername() != null && repo.findByUsername(data.getUsername()) != null) {
-                errors.addError("User", "Username already exists");
+                errors.addError("RequestValidationError", "Username already exists");
             }
 
             // email needs to be in a valid email format
             if (data.getWorkEmail() != null && !data.getWorkEmail().matches("^(\\w+@\\w+\\.\\w{2,3})$")) {
-                errors.addError("User", "Work email is not in a valid format");
+                errors.addError("RequestValidationError", "Work email is not in a valid format");
             }
 
             // check to see if the email has already been used
             if (data.getWorkEmail() != null && repo.findByWorkEmail(data.getWorkEmail()) != null) {
-                errors.addError("User", "Work email needs to be unique");
+                errors.addError("RequestValidationError", "Work email needs to be unique");
             }
 
             // mobile needs to be 10 digital numerical format
             if (data.getMobile() != null && !data.getMobile().matches("^(?:\\d{10})$")) {
-                errors.addError("User", "Mobile number is not in a 10 digit format");
+                errors.addError("RequestValidationError", "Mobile number needs to be in a 10 digit format");
             }
 
             ROLE role = null;
 
             if (data.getRole() != null) {
-                role = ROLE.valueOf(data.getRole().toUpperCase());
+                try {
+                    role = ROLE.valueOf(data.getRole().toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    errors.addError("RequestValidationError",
+                            "A role match could not be found. Please consult the documentation for accepted values for roles");
+                }
+            }
+
+            if (data.getState() != null) {
+                STATE state = STATE.from(data.getState());
+
+                if (state == null)
+                    errors.addError("RequestValidationError",
+                            "A state match could not be found. Please consult the documentation for accepted values for Australian states");
+            }
+
+            if (data.getPostcode() != null && !data.getPostcode().matches("[\\d]{4}")) {
+                errors.addError("RequestValidationError",
+                        "Postcode field should only contain numbers and be 4 numbers in length");
             }
 
             if (!errors.isEmpty()) {

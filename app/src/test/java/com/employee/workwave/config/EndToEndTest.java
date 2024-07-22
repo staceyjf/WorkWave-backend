@@ -33,6 +33,9 @@ public abstract class EndToEndTest {
 
     @BeforeEach
     public void setUp() throws ServiceValidationException  {
+        this.testUserToken = ""; 
+        this.adminTestUserToken = "";
+
         RestAssured.port = port;
         this.dataLoader.clearData();
         this.dataLoader.loadData();
@@ -51,8 +54,12 @@ public abstract class EndToEndTest {
         return RestAssured.given().cookie("accessToken", this.adminTestUserToken);
     }
 
-    public RequestSpecification givenUserToken(){
+    public RequestSpecification givenUserToken() {
         return RestAssured.given().cookie("accessToken", this.testUserToken);
+    }
+
+    public RequestSpecification givenNoJwtCookie(){
+        return RestAssured.given().cookie("accessToken", "");
     }
 
 }
