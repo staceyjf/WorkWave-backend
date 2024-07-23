@@ -1,11 +1,11 @@
 # WorkWave-backend
 
-A full stack Spring boot app designed to help you manage your employees with ease
+A full stack Spring boot app designed to help you manage your employees with ease.
 
 ## The Brief
 
 In this fictional brief, I have been task to build a full stake employee management tool with the following requirements:
-We need a web application to create, list, modify and delete employees. The application should consist of a spring RESTful API and a React Typescript frontend. The schema for the employee is left to the criteria of the candidate.
+- We need a web application to create, list, modify and delete employees. The application should consist of a spring RESTful API and a React Typescript frontend. The schema for the employee is left to the criteria of the candidate.
 
 React hints:
 
@@ -53,19 +53,20 @@ This API works hand in hand with the Typescript React app (available [here](http
 
 ### ERD
 
-Understanding the relationship of the data was an important starting point, and it was determined that a normalized data structure would be the most suitable approach to minimize redundancy and dependency. I took the following steps:
+Understanding the relationship of the data was an important starting point, and I determined that a normalized data structure would be the most suitable approach to minimize redundancy and dependency. 
 
-1. Reviewed the fields required for authentication and how they could be overlaid with employee information to create a streamlined user based `Employee` entity
-2. Separated out the work-specific details of the role into an `Contract` Entity to hold items such as contract type (contract vs. permanent) and employment type (part-time vs. full-time).
+Steps taken:
+1. Reviewed the fields required for authentication and how they could be overlaid with employee information to create a streamlined user-based `Employee` entity.
+2. Separated out the work-specific details of the role into a `Contract` entity to hold items such as contract type (contract vs. permanent) and employment type (part-time vs. full-time)..
 
 <div align="center">
   <img src="./planning/workwave_erd.png" style="max-width: 800px;" alt="ERD for workwave API">
 </div>
 
 ### Business assumptions
-1. Full-time permanent employees can only have one contract at a time (unless the end date is set before the start date of a new contract)
+1. Full-time permanent employees can only have one contract at a time (unless the end date is set before the start date of a new contract).
 2. Full-time contracting employees can only start a new contract once the existing contract has expired.
-3. The minimum length of a contract needs to be one calendar day
+3. The minimum length of a contract needs to be one calendar day.
 
 <!-- ### Design inspiration
 
@@ -79,7 +80,9 @@ I took inspiration from the existing Aus-Post service to help shape my design wh
 
 1. **Adopting the Controller-Service-Repository Pattern:** This layered architecture approach ensured clear separation of concerns, leadings to better organized and more maintainable code. 
 
-2. **Authentication:** Following a discussion with my \_nology coach, I wanted to extend my learning but implementing a cookie-based JWT instead via the Response Authorization header like I have previously done in my last two projects. 
+2. **Authentication:** Extended existing learning by implementing a cookie-based JWT instead of using the Response Authorization header.
+
+3. **Manual approach to validation and model mapping:** Chose to manually handle model mapping and validation in the service layer to gain a deeper understanding of serialization/deserialization and implement a comprehensive error strategy with custom error messaging.
 
 <!-- which manifested into a flow of data via the following layers:
 
@@ -97,32 +100,29 @@ I took inspiration from the existing Aus-Post service to help shape my design wh
 
 2. **API documentation:** Integrated Swagger for clear, interactive API documentation, making it easier to understand and consume the API.
 
-3. **Logging:** Addition of Log4J logger to implement a error and general log file for clear debugging.
+3. **Logging:** Added Log4J logger and a file-based logging strategy, improving the traceability and debugging of server-side errors.
 
-4. **CI/CD Pipeline:** Implement a development workflow with Github Actions to ensure code passes the test suite before being added to the main branch.
-
+4. **CI/CD Pipeline:** Implemented a development workflow with GitHub Actions to ensure code passes the test suite before being added to the main branch.
 
 #### The '20':
 
-1. **Authentication:** Explore utlitisng Jakata Java Cookie to attached and retrieve the JWT 
+1. **Authentication:** : Utilized Jakarta Java Cookie to attach and retrieve the JWT.
+
+2. **Lombok Integration:** Integrated the Lombok library to reduce boilerplate code.
 
 #### The '10':
 
-1. **Basic Integration Testing:** Full testing with Junit5 and 
+1. **Basic Integration Testing:**  Testing: Full integration testing with JUnit5 and Rest Assured for Authentication (Register and Sign In) and Employee Entity (CRUD).
 
 ## Key Learning Highlights
 
-1. **External libraries:** While Flask-Smorest did a lot of the heavy lifting with serialising / deserialisng and providing documentation via swagger, it required a class-based approach for my controllers, utilizing Flask's MethodView. Although my preference was for a functional approach to maintain consistency, the benefits offered by Flask-Smorest outweighed my preference for consistency.
+1. **Spring boot tooling:** Gained deep insights into the various tools and libraries within the Spring Boot ecosystem.
 
 ## To-Dos
 
-1. **Testing:** Implement unit testing with pyTest.
-2. **Logging strategy:** Enhance the logging strategy to include file-based logging, improving the traceability and debugging of server-side errors.
-3. **Response loading strategy:** Implement pagination for postcodes and suburbs, and explore alternative strategies (e.g., lazy loading) for optimizing data delivery in reporting features.
-4. **Auth logic:** Refine the `token_required` decorator to efficiently return `signed_in_user` details, ensuring seamless authentication flows.
-5. **Bi-directional implementation:** Enhance the create and update functionalities for suburbs to support bi-directional association with postcodes, facilitating richer data relationships.
-6. **JWT Implementation:** Transition to a cookie-based JWT exchange mechanism for improved security and user authentication management.
-7. **CI/CD Pipeline:** Implement a development workflow with Github Actions
+1. **Response loading strategy:** Implement pagination and explore alternative strategies (e.g., lazy loading) for optimizing data delivery in reporting features.
+2. **Testing:** Expand integration testing to include Departments and Contract entities.
+3. **Querying:**Expand functionality to include the ability to query employees based on contract status or employment status.
 
 ## Changelog
 
@@ -132,18 +132,19 @@ I took inspiration from the existing Aus-Post service to help shape my design wh
 Explore the spring API documentation at: `http://localhost:8080/swagger-ui/index.html`
 
 <div align="center">
-  <img src="./planning /Swagger_doc_new.png" style="max-width: 600px;" alt="Swagger documentation of PostCheck API">
-</div> -->
+  <img src="./planning/swagger.png" style="max-width: 600px;" alt="Swagger documentation of PostCheck API">
+</div>
 
 ## Technologies Used
 
 <div align="center">
 
 ![Spring Boot](https://img.shields.io/badge/-Spring%20Boot-05122A?style=flat&logo=springboot)
-![React Testing Library](https://img.shields.io/badge/-React%20Testing%20Library-05122A?style=flat&logo=testinglibrary)
+![JUnit5](https://img.shields.io/badge/-JUnit5-05122A?style=flat&logo=junit5)
+![Rest Assured](https://img.shields.io/badge/-Rest%20Assured-05122A?style=flat&logo=rest-assured)
 ![Log4j2](https://img.shields.io/badge/-Log4j2-05122A?style=flat&logo=apache)
 ![OpenAPI](https://img.shields.io/badge/-OpenAPI-05122A?style=flat&logo=openapiinitiative)
-![Docker](https://img.shields.io/badge/-Docker-05122A?style=flat&logo=docker)
+<!-- ![Docker](https://img.shields.io/badge/-Docker-05122A?style=flat&logo=docker) -->
 ![Git](https://img.shields.io/badge/-Git-05122A?style=flat&logo=git)
 ![GitHub](https://img.shields.io/badge/-GitHub-05122A?style=flat&logo=github)
 
