@@ -47,8 +47,8 @@ This API works hand in hand with the Typescript React app (available [here](http
 ```bash
 1. Clone the repo.
 2. Cd into `WorkWave-backend` folder
-3. Start the Spring Boot backend via `xyz`
-4. Test suit can be run via `zyx`
+3. Start the Spring Boot backend via `WorkWaveApplication.java`
+4. Test suit can be run via `app/src/test` folder
 ```
 
 ## Planning considerations
