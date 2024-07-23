@@ -17,14 +17,13 @@ public class DeleteEmployeeTest extends EndToEndTest {
     @Autowired
     public DeleteEmployeeTest(TestDataLoader dataLoader, TokenProvider tokenProvider) {
         super(dataLoader, tokenProvider);
-
     }
 
     // ---------------------- Delete by id ------------------------------
     @Test
     public void adminUserCanDeleteEmployeesById() {
         Response response = givenAdminUserToken().contentType(ContentType.JSON)
-                .delete("/api/v1/user-management/employees/1")
+                .delete("/api/v1/user-management/employees/" + getTestUserId())
                 .andReturn();
 
         assertEquals(204, response.getStatusCode());
@@ -33,7 +32,8 @@ public class DeleteEmployeeTest extends EndToEndTest {
     @Test
     public void plainUserCanNotDeleteEmployeesById() {
         Response response = givenUserToken().contentType(ContentType.JSON)
-                .delete("/api/v1/user-management/employees/2")
+                .delete("/api/v1/user-management/employees/"
+                        + getTestUserId())
                 .andReturn();
 
         assertEquals(403, response.getStatusCode());

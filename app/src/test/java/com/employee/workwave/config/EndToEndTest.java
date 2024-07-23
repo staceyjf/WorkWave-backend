@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
+import com.employee.workwave.Department.Department;
 import com.employee.workwave.Employee.Employee;
 import com.employee.workwave.config.Auth.TokenProvider;
 import com.employee.workwave.exceptions.ServiceValidationException;
@@ -24,6 +25,8 @@ public abstract class EndToEndTest {
     private final TokenProvider TokenProvider;
     private String testUserToken;
     private String adminTestUserToken;
+    protected Long departmentId;
+    protected Long testUserId;
 
     @Autowired
     public EndToEndTest(TestDataLoader dataLoader, TokenProvider TokenProvider) {
@@ -32,17 +35,20 @@ public abstract class EndToEndTest {
     }
 
     @BeforeEach
-    public void setUp() throws ServiceValidationException  {
-        this.testUserToken = ""; 
+    public void setUp() throws ServiceValidationException {
+        this.testUserToken = "";
         this.adminTestUserToken = "";
 
         RestAssured.port = port;
         this.dataLoader.clearData();
         this.dataLoader.loadData();
         Employee testUser = this.dataLoader.getTestUser();
+        this.testUserId = testUser.getId();
         this.testUserToken = this.TokenProvider.generateAccessToken(testUser);
         Employee adminTestUser = this.dataLoader.getAdminTestUser();
         this.adminTestUserToken = this.TokenProvider.generateAccessToken(adminTestUser);
+        Department testDepartment = this.dataLoader.getDepartment();
+        this.departmentId = testDepartment.getId();
     }
 
     @AfterEach
@@ -58,7 +64,7 @@ public abstract class EndToEndTest {
         return RestAssured.given().cookie("accessToken", this.testUserToken);
     }
 
-    public RequestSpecification givenNoJwtCookie(){
+    public RequestSpecification givenNoJwtCookie() {
         return RestAssured.given().cookie("accessToken", "");
     }
 

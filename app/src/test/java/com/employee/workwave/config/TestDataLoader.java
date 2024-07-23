@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -31,6 +33,8 @@ public class TestDataLoader {
     private Map<String, Department> departments = new HashMap<>();
     private Map<String, Contract> contracts = new HashMap<>();
     private Map<String, String> rawPasswords = new HashMap<>();
+
+    private static final Logger fullLogsLogger = LogManager.getLogger("fullLogs");
 
     @Autowired
     public TestDataLoader(
@@ -59,6 +63,10 @@ public class TestDataLoader {
         return employees.get(key);
     }
 
+    public Department getDepartment() {
+        return departments.get("Human resources");
+    }
+
     public void loadData() {
         createContract();
     }
@@ -76,14 +84,11 @@ public class TestDataLoader {
     private void createDepartment() {
         Department dept1 = new Department();
         String dept1Name = "Human resources";
-        dept1.setId(Long.valueOf(1));
         dept1.setDepartmentName(dept1Name);
         departments.put(dept1Name, this.departmentRepository.save(dept1));
 
         Department dept2 = new Department();
         String dept2Name = "Finance";
-        dept2.setId(Long.valueOf(2));
-        dept2.setDepartmentName(dept2Name);
         dept2.setDepartmentName(dept2Name);
         departments.put(dept2Name, this.departmentRepository.save(dept2));
     }
@@ -91,7 +96,6 @@ public class TestDataLoader {
     private void createEmployees() {
         createDepartment();
         Employee adminTestUser = new Employee();
-        adminTestUser.setId(Long.valueOf(1));
         adminTestUser.setUsername("ADMIN");
         adminTestUser.setRole(ROLE.ADMIN);
         adminTestUser.setPublicId(UUID.randomUUID().toString());
@@ -110,10 +114,11 @@ public class TestDataLoader {
 
         rawPasswords.put("adminTestUser", rawPass1);
         adminTestUser.setPassword(passwordEncoder.encode(rawPass1));
-        employees.put("adminTestUser", this.employeeRepository.save(adminTestUser));
+        Employee savedAdminEmployee = this.employeeRepository.save(adminTestUser);
+        fullLogsLogger.info("Saved employee: " + savedAdminEmployee);
+        employees.put("adminTestUser", savedAdminEmployee);
 
         Employee testUser = new Employee();
-        testUser.setId(Long.valueOf(2));
         testUser.setUsername("USER");
         testUser.setRole(ROLE.USER);
         testUser.setPublicId(UUID.randomUUID().toString());
@@ -131,7 +136,32 @@ public class TestDataLoader {
 
         rawPasswords.put("testUser", rawPass2);
         testUser.setPassword(passwordEncoder.encode(rawPass2));
-        employees.put("testUser", this.employeeRepository.save(testUser));
+        Employee savedEmployee = this.employeeRepository.save(testUser);
+        fullLogsLogger.info("Saved testUser employee: " + savedEmployee);
+        employees.put("testUser", savedEmployee);
+
+        Employee testUser2 = new Employee();
+        testUser2.setUsername("TesterUser");
+        testUser2.setRole(ROLE.USER);
+        testUser2.setPublicId(UUID.randomUUID().toString());
+        // testUser2.setPassword("test1234");
+        testUser2.setFirstName("Test2");
+        testUser2.setLastName("test2");
+        testUser2.setWorkEmail("test2@gmail.com");
+        testUser2.setMobile("0479148032");
+        testUser2.setAddress("25 Osborne Road");
+        testUser2.setPostcode("2095");
+        testUser2.setState(STATE.NSW);
+        testUser2.setAssociatedDepartment(departments.get("Finance"));
+
+        String rawPass3 = "password1234";
+
+        rawPasswords.put("testUser2", rawPass3);
+        testUser2.setPassword(passwordEncoder.encode(rawPass3));
+        Employee savedEmployee2 = this.employeeRepository.save(testUser2);
+        fullLogsLogger.info("Saved testUser2 employee: " + savedEmployee2);
+        employees.put("testUser2", savedEmployee2);
+
     }
 
     private void createContract() {

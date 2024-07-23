@@ -40,9 +40,9 @@ public class ReadEmployeeTest extends EndToEndTest {
 
     // ---------------------- Read by id ------------------------------
     @Test
-    public void adminUserCanRequestEmployeesById() {
+    public void adminUserCanRequestEmployeesById() {        
         Response response = givenAdminUserToken().contentType(ContentType.JSON)
-                .get("/api/v1/user-management/employees/1")
+                .get("/api/v1/user-management/employees/" + getTestUserId())
                 .andReturn();
 
         assertEquals(200, response.getStatusCode());
@@ -54,7 +54,7 @@ public class ReadEmployeeTest extends EndToEndTest {
     @Test
     public void plainUserCanNotRequestEmployeesById() {
         Response plainResponse = givenUserToken().contentType(ContentType.JSON)
-                .get("/api/v1/user-management/employees/2")
+                .get("/api/v1/user-management/employees/" + getTestUserId())
                 .andReturn();
 
         assertEquals(403, plainResponse.getStatusCode());
