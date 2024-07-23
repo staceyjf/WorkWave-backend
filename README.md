@@ -27,8 +27,6 @@ At least 3 endpoints are required:
 - To get a list of existing employees
 - To delete an employee
 
-Explore the spring API documentation at: http://localhost:8080/swagger-ui/index.html
-
 <!-- ## Demo
 
 This API works hand in hand with the Typescript React app (available [here](https://github.com/staceyjf/Postcheck-front)) which is being demo'ed below.
@@ -77,21 +75,17 @@ I took inspiration from the existing Aus-Post service to help shape my design wh
   <img src="./planning /aus-post-inspiration.png" style="max-width: 800px;" alt="Image of Aus-post postcode checker">
 </div> -->
 
-<!-- ### Design choices
+### Design choices
 
-1. **RESTful API Design:** Felt like a natural git given its wide spread adoption, compatibility and simplicity (leveraging std HTTP methods to interact with resources).
+1. **Adopting the Controller-Service-Repository Pattern:** This layered architecture approach ensured clear separation of concerns, leadings to better organized and more maintainable code. 
 
-2. **Adopting the Controller-Service-Repository Pattern:** This layered architecture approach ensured clear separation of concerns, leadings to better organized and more maintainable code.
+2. **Authentication:** Following a discussion with my \_nology coach, I wanted to extend my learning but implementing a cookie-based JWT instead via the Response Authorization header like I have previously done in my last two projects. 
 
-3. **Modular Services Architecture:** The use of factory functions in the create_app() and utilizing Flask-Smorest's blueprints enabled the API to be designed into loosely coupled components where each service is focused on a specific entities (Postcodes, Suburbs, Users and Reporting).
-
-4. **Authentication:** Following a discussion with my \_nology coach, we agreed that JWT implemented via including the token in the Authorization header of HTTP requests. The server validates this token and determines the response based on its validity.
-
-which manifested into a flow of data via the following layers:
+<!-- which manifested into a flow of data via the following layers:
 
 <div align="center">
   <img src="./planning /flowData.jpg" style="max-width: 800px;" alt="Flow of data">
-</div>
+</div> -->
 
 ## Key Features:
 
@@ -99,38 +93,26 @@ which manifested into a flow of data via the following layers:
 
 #### The '70':
 
-1. **CRUD API Endpoints**: Developed comprehensive RESTful CRUD (Create, Read, Update, Delete) endpoints for managing Postcodes and Suburbs. This includes the capability to query postcodes by suburb name
+1. **CRUD API Endpoints**: Developed comprehensive RESTful CRUD (Create, Read, Update, Delete) endpoints for managing Departments, Employees and Contracts. 
 
 2. **API documentation:** Integrated Swagger for clear, interactive API documentation, making it easier to understand and consume the API.
 
-3. **Logging:** Adopted Python's built-in logging module via Flask for basic console-level logging, providing insights into the application's operational status and aiding in troubleshooting.
+3. **Logging:** Addition of Log4J logger to implement a error and general log file for clear debugging.
 
-4. **Database Management:**
+4. **CI/CD Pipeline:** Implement a development workflow with Github Actions to ensure code passes the test suite before being added to the main branch.
 
-   - Employed Alembic via Flask Migrate to maintain the integrity of the data by keeping track and implementing changes to the db's schema through migration scripts.
-   - Used SQLAlchemy as the ORM to define and generate the schema.
-
-5. **Response Validation:** Implemented response validation with Marshmallow to reduce errors arising from unexpected request bodies and enhance developer experience by ensuring consistent and validated responses.
-
-6. **Serialization/Deserialization:** Utilized Flask-Smorest to automate the serialization and deserialization of data, reducing the potential for errors that can occur when manually serializing or deserializing data.
-
-7. **Basic Integration Testing:** All endpoints were tested in Postman to ensure that the server, database, and validation mechanisms were functioning correctly.
 
 #### The '20':
 
-1. **Authentication:** Utilized the HS256 algorithm and a secret key for JWT (JSON Web Tokens) authentication with PyJWT, enhancing security by ensuring that certain routes were accessible only to authenticated users.
+1. **Authentication:** Explore utlitisng Jakata Java Cookie to attached and retrieve the JWT 
 
 #### The '10':
 
-1. **Basic Data Processing Pipeline:** Developed a basic data pipeline with PySpark to load a sample dataset into a PostgreSQL database, perform essential data cleaning and preparation tasks, and subsequently write the processed data to PostCheck's MySQL database.
+1. **Basic Integration Testing:** Full testing with Junit5 and 
 
 ## Key Learning Highlights
 
 1. **External libraries:** While Flask-Smorest did a lot of the heavy lifting with serialising / deserialisng and providing documentation via swagger, it required a class-based approach for my controllers, utilizing Flask's MethodView. Although my preference was for a functional approach to maintain consistency, the benefits offered by Flask-Smorest outweighed my preference for consistency.
-
-2. **Reporting Data:** The process of manipulating data to fit the requirements of Nivo charting tested both my understanding of my validation schemas and my foundational Python skills, particularly in writing loops to restructure data and insert new key-value pairs into each data point dictionary.
-
-3. **CORS:** Despite adding Flask-CORS to handle Cross-Origin Resource Sharing, additional configuration was necessary to bypass the default security restrictions for cross-origin requests.
 
 ## To-Dos
 
@@ -144,22 +126,10 @@ which manifested into a flow of data via the following layers:
 
 ## Changelog
 
-Date: 11/07/24
-
-Updates:
-
-1. Deployment: Deployed to Azure Web App
-2. mySql DB: Created and seeded a new hosted cloud-based mysql db
-
-Date: 12/07/24
-
-Updates:
-
-1. Addition of ProxyFix Middleware to solve the HTTPS redirecting to HTTP and causing a mixed content error on the front end: Since the deployment is on Azure Web App, which acts as a reverse proxy, it was necessary to integrate ProxyFix middleware. This middleware wraps the application to ensure Gunicorn correctly constructs the request based on the origin request's schema (HTTP/HTTPs).
 
 ## Documentation
 
-Explore the spring API documentation at: `https://postcheck-dgd3apheh6bdf0cw.australiaeast-01.azurewebsites.net/api/v1/docs`
+Explore the spring API documentation at: `http://localhost:8080/swagger-ui/index.html`
 
 <div align="center">
   <img src="./planning /Swagger_doc_new.png" style="max-width: 600px;" alt="Swagger documentation of PostCheck API">
