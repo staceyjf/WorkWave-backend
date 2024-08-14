@@ -43,10 +43,12 @@ This API works hand in hand with the Typescript React app (available [here](http
 ## Build Steps
 
 ```bash
-1. Clone the repo.
-2. Cd into `WorkWave-backend` folder
-3. Start the Spring Boot backend via `WorkWaveApplication.java`
-4. Test suit can be run via `app/src/test` folder
+1. git clone https://github.com/staceyjf/WorkWave-backend
+2. cd WorkWave-backend 
+3. mvn -B package --file pom.xml
+4. Add your credential in a .env to connect to a postgres database. An example env configure can be found at `.env.example`
+5. mvn spring-boot:run
+6. Run tests: `mvn --batch-mode --update-snapshots verify`
 ```
 
 ## Planning considerations
@@ -122,7 +124,7 @@ I took inspiration from the existing Aus-Post service to help shape my design wh
 
 1. **Response loading strategy:** Implement pagination and explore alternative strategies (e.g., lazy loading) for optimizing data delivery in reporting features.
 2. **Testing:** Expand integration testing to include Departments and Contract entities.
-3. **Querying:**Expand functionality to include the ability to query employees based on contract status or employment status.
+3. **Querying:** Expand functionality to include the ability to query employees based on contract status or employment status.
 
 ## Changelog
 
